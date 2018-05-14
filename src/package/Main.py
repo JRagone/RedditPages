@@ -4,41 +4,29 @@ Created on May 11, 2018
 @author: John Ragone
 '''
 
+#Import Libraries
 import requests
 from jinja2 import Template, Environment, PackageLoader, select_autoescape
 import time
 
+#Create environment
 env = Environment(
     loader=PackageLoader('package', 'templates'),
     autoescape=select_autoescape(['html'])
 )
 
-r = requests.get('https://www.reddit.com/r/climbing/.json').json()
+#Get data from webpage
+climbing_json = requests.get('https://www.reddit.com/r/climbing/.json').json()
 
-print(r)
+#Test printing title of second post
+print(climbing_json["data"]["children"][1]["data"]["title"])
+#Store list of posts
+posts_list = climbing_json["data"]["children"]
 
-print(r["data"]["children"][1]["data"]["title"])
-
-#env = Environment(
-#    loader = PackageLoader('yourapplication', 'templates')
-#)
-
-
-#template = Template('Hello {{ name }}')
-
-#with open("Output.html", "w") as output_file:
-#    output_file.write(template.render(name = 'Bill'))
-
-
-#with open("Output.html", "w") as output_file:
-#    for child in r["data"]["children"]:
-#        output_file.write(child["data"]["title"])
-
-children = r["data"]["children"]
+#Get Page.html template
 template = env.get_template('Page.html')
-#print(template.render(children = "children"))
-
+#Use template to read and write data to Output.html
 with open("Output.html", "w") as output_file:
-    output_file.write(template.render(children = children))
+    output_file.write(template.render(posts_list = posts_list))
 
 

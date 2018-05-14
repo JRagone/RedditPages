@@ -1,5 +1,6 @@
 <ul>
-	{% for child in children %}
-		<li><a href = '{{ child.data.url }}'>{{ child.data.title }}</a></li>
+	<!-- This loops through each post and uses url and title to add a link to the title -->
+	{% for post in posts_list %}
+		<li><a href = '{{ post.data.url }}'>{{ post.data.title }}</a></li>
 	{% endfor %}
 </ul>
