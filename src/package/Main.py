@@ -7,7 +7,6 @@ Created on May 11, 2018
 #Libraries
 import requests
 from jinja2 import Environment, PackageLoader, select_autoescape
-import json
 
 #Returns score for a given post
 def returnPostScore(elem):
@@ -15,13 +14,12 @@ def returnPostScore(elem):
 
 #Create environment
 env = Environment(
-    loader=PackageLoader('package', 'templates'),
-    autoescape=select_autoescape(['html'])
+    loader = PackageLoader('package', 'templates'),
+    autoescape = select_autoescape(['html'])
 )
 #Template Description: This loops through each post
 # and adds links to titles by accessing .data.url and .data.title
 template = env.get_template('Page.html')
-
 #List of subreddits to visit
 subreddits = ['climbing', 'MachineLearning', 'SpaceX']
 #List to hold post JSON for summary page
