@@ -7,48 +7,56 @@ Created on May 11, 2018
 #Libraries
 import requests
 from jinja2 import Environment, PackageLoader, select_autoescape
+import json
+
+#Returns score for a given post
+def returnPostScore(elem):
+    return elem["data"]["score"]
 
 #Create environment
 env = Environment(
     loader=PackageLoader('package', 'templates'),
     autoescape=select_autoescape(['html'])
 )
+#Template Description: This loops through each post
+# and adds links to titles by accessing .data.url and .data.title
+template = env.get_template('Page.html')
 
 #List of subreddits to visit
 subreddits = ['climbing', 'MachineLearning', 'SpaceX']
+#List to hold post JSON for summary page
+summary_posts_list = []
 
 #Loop through subreddits
 for subreddit in subreddits:
     #Get data from web page
-    url = requests.get('https://www.reddit.com/r/' + subreddit + '/.json')
+    web_url = requests.get('https://www.reddit.com/r/' + subreddit + '/.json')
     
     #If there is an error, report it
-    if(not url.ok):
-        print("Error " + str(url.status_code) + " from " + subreddit + " subreddit.")
+    if(not web_url.ok):
+        print("Error " + str(web_url.status_code) + " from " + subreddit + " subreddit.")
         #If the error is not a too_many_requests error, raise the error
-        if(url.status_code != 429):
-            print(url.raise_for_status())
+        if(web_url.status_code != 429):
+            print(web_url.raise_for_status())
     
     #Request data until returned
-    while(not url.ok):
+    while(not web_url.ok):
         #If the error is not a too_many_requests error, raise the error
-        if(url.status_code != 429):
-            print(url.raise_for_status())
-        url = requests.get('https://www.reddit.com/r/climbing/.json')
+        if(web_url.status_code != 429):
+            print(web_url.raise_for_status())
+        web_url = requests.get('https://www.reddit.com/r/' + subreddit + '/.json')
     
     print("Web data retrieved for " + subreddit + " subreddit.")
     #Decode JSON
-    json = url.json()
+    web_json = web_url.json()
     
     #Store list of posts
-    posts_list = json["data"]["children"]
+    web_posts_list = web_json["data"]["children"]
+    summary_posts_list.append(web_posts_list)
     
-    #Template Description: This loops through each post
-    # and adds links to titles by accessing .data.url and .data.title
-    template = env.get_template('Page.html')
-    #Use template to read and write data to Output.html
+    #Use template to read and write data to subreddit.html
     with open(subreddit + '.html', "w") as output_file:
-        output_file.write(template.render(posts_list = posts_list))
+        output_file.write(template.render(posts_list = web_posts_list))
     
     #Check that file is closed
     if(output_file.closed == False):
@@ -57,5 +65,15 @@ for subreddit in subreddits:
     
     #New line between subreddits
     print("\n")
-    
+
+#Turn each list of posts from a subreddit into one list
+flat_summary_posts_list = [item for sublist in summary_posts_list for item in sublist]
+
+#Sort the list in descending order based on score
+flat_summary_posts_list.sort(key = returnPostScore, reverse = True)
+
+#Use template to read and write data to Summary.html
+with open('Summary.html', "w") as output_file:
+    output_file.write(template.render(posts_list = flat_summary_posts_list))
+
 print("Complete.")
