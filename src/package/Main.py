@@ -45,3 +45,5 @@ template = env.get_template('Page.html')
 #Use template to read and write data to Output.html
 with open("Output.html", "w") as output_file:
     output_file.write(template.render(posts_list = posts_list))
+    
+print("Complete.")
