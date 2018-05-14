@@ -1,0 +1,5 @@
+<ul>
+	{% for child in children %}
+		<li><a href = '{{ child.data.url }}'>{{ child.data.title }}</a></li>
+	{% endfor %}
+</ul>
