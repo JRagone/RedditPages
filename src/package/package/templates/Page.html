@@ -1,0 +1,5 @@
+<ul>
+	{% for post in posts_list %}
+		<li>{{post.data.score}} - <a href = '{{ post.data.url }}'>{{ post.data.title }}</a></li>
+	{% endfor %}
+</ul>
