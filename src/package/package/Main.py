@@ -74,4 +74,4 @@ flat_summary_posts_list.sort(key = returnPostScore, reverse = True)
 with open('Summary.html', "w") as output_file:
     output_file.write(template.render(posts_list = flat_summary_posts_list))
 
-print("Complete.")
+print("Completed.")
